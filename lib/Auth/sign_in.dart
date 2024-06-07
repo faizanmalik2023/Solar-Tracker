@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:solar_tracker/Auth/sign_up.dart';
 import 'package:solar_tracker/home.dart';
-import 'package:solar_tracker/tracker_settings.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -32,20 +31,20 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               children: [
                 const Text(
                   "Solar Controller",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -53,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
                   "Enter email and address",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black54,
+                    color: Colors.white70,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -61,24 +60,50 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.white),
+                    filled: true,
+                    fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.blue),
                     ),
                     contentPadding: EdgeInsets.symmetric(horizontal: 25.0),
                   ),
+                  style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    labelStyle: TextStyle(color: Colors.white),
+                    filled: true,
+                    fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: BorderSide(color: Colors.blue),
                     ),
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                    suffixIcon: Icon(Icons.visibility_off),
+                    suffixIcon: Icon(Icons.visibility_off, color: Colors.white),
                   ),
                   obscureText: true,
+                  style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
@@ -101,7 +126,10 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => SignUpPage()),
                     );
                   },
-                  child: Text('Forgot Password?',style: TextStyle(color: Colors.black45),),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                 ),
                 const SizedBox(height: 8),
               ],

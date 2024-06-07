@@ -71,7 +71,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
       if (value) {
         await FlutterBluePlus.turnOn();
       } else {
-        await FlutterBluePlus.;
+        // await FlutterBluePlus.;
       }
     }
     setState(() {
@@ -95,7 +95,8 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
     return Scaffold(
       appBar: AppBar(
         title: Text('Connect Bluetooth Tracker'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.grey[900],
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

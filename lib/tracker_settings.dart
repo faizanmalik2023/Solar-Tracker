@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:solar_tracker/Settings/azimuth_motor_settings.dart';
+import 'package:solar_tracker/Settings/azimuth_settings.dart';
+import 'package:solar_tracker/Settings/general_page.dart';
+import 'package:solar_tracker/Settings/tracker_control.dart';
+import 'package:solar_tracker/Settings/tracker_location.dart';
+import 'package:solar_tracker/Settings/zenith_motor_settings.dart';
+import 'package:solar_tracker/Settings/zenith_settings.dart';
 
 class TrackerSettingsPage extends StatelessWidget {
   @override
@@ -32,13 +39,13 @@ class TrackerSettingsPage extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _buildListTile(context, 'Tracker Control', TrackerControlPage()),
-                _buildListTile(context, 'Azimuth Settings', AzimuthSettingsPage()),
-                _buildListTile(context, 'Azimuth Motor', AzimuthMotorPage()),
-                _buildListTile(context, 'Zenith Settings', ZenithSettingsPage()),
-                _buildListTile(context, 'Zenith Motor', ZenithMotorPage()),
-                _buildListTile(context, 'Location', LocationPage()),
-                _buildListTile(context, 'General', GeneralPage()),
+                _buildListTile(context, 'Tracker Control', const TrackerControl()),
+                _buildListTile(context, 'Azimuth Settings', const AzimuthSettings()),
+                _buildListTile(context, 'Azimuth Motor', AzimuthMotorSettingsPage()),
+                _buildListTile(context, 'Zenith Settings', const ZenithSettings()),
+                _buildListTile(context, 'Zenith Motor', const ZenithMotorSettings()),
+                _buildListTile(context, 'Location', const TrackerLocation()),
+                _buildListTile(context, 'General', const GeneralPage()),
               ],
             ),
           ),
@@ -69,76 +76,6 @@ class TrackerSettingsPage extends StatelessWidget {
           },
         ),
       ),
-    );
-  }
-}
-
-class TrackerControlPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Tracker Control')),
-      body: Center(child: Text('Tracker Control Page')),
-    );
-  }
-}
-
-class AzimuthSettingsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Azimuth Settings')),
-      body: Center(child: Text('Azimuth Settings Page')),
-    );
-  }
-}
-
-class AzimuthMotorPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Azimuth Motor')),
-      body: Center(child: Text('Azimuth Motor Page')),
-    );
-  }
-}
-
-class ZenithSettingsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Zenith Settings')),
-      body: Center(child: Text('Zenith Settings Page')),
-    );
-  }
-}
-
-class ZenithMotorPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Zenith Motor')),
-      body: Center(child: Text('Zenith Motor Page')),
-    );
-  }
-}
-
-class LocationPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Location')),
-      body: Center(child: Text('Location Page')),
-    );
-  }
-}
-
-class GeneralPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('General')),
-      body: Center(child: Text('General Page')),
     );
   }
 }
