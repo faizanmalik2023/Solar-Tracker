@@ -23,7 +23,7 @@ class _SignInPageState extends State<SignInPage> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute<HomePage>(builder: (context) => const HomePage()),
       );
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -42,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Solar Controller",
+                  'Solar Controller',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  "Enter email and address",
+                  'Enter email and address',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -128,7 +128,8 @@ class _SignInPageState extends State<SignInPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                      MaterialPageRoute<SignUpPage>(
+                          builder: (context) => SignUpPage()),
                     );
                   },
                   child: const Text(

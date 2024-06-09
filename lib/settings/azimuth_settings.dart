@@ -23,10 +23,14 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _azimuthNegLimit.text = data['AzNegLimit'] ?? '';
-        _azimuthOffset.text = data['AzOffset'] ?? '';
-        _azimuthPark.text = data['AzPark'] ?? '';
-        _azimuthPosLimit.text = data['AzPosLimit'] ?? '';
+        _azimuthNegLimit.text = (data['AzNegLimit'] ?? '').toString();
+        ;
+        _azimuthOffset.text = (data['AzOffset'] ?? '').toString();
+        ;
+        _azimuthPark.text = (data['AzPark'] ?? '').toString();
+        ;
+        _azimuthPosLimit.text = (data['AzPosLimit'] ?? '').toString();
+        ;
       });
     } else {
       // Handle the error
@@ -45,7 +49,8 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Azimuth settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Azimuth settings',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -67,7 +72,8 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

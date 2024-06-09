@@ -36,7 +36,7 @@ class _ConnectBluetoothTrackerPageState
   void _initBluetooth() async {
     // Check if Bluetooth is supported
     if (await FlutterBluePlus.isSupported == false) {
-      print("Bluetooth not supported by this device");
+      print('Bluetooth not supported by this device');
       return;
     }
 

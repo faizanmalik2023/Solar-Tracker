@@ -39,14 +39,16 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _stallSpeedController.text = data['AzStallSpeed'] ?? '';
-        _reverseMotorController.text = data['AzReverseMotor'] ?? '';
-        _accellTimeController.text = data['AzAccellTime'] ?? '';
-        _motorRatioController.text = data['AzMotorRatio'] ?? '';
-        _driveRatioController.text = data['AzDriveRatio'] ?? '';
-        _encoderPPRController.text = data['AzEncodePPR'] ?? '';
-        _degreeToScaleController.text = data['AzDegreetoScale'] ?? '';
-        _deadBandController.text = data['AzDeadBand'] ?? '';
+        _stallSpeedController.text = (data['AzStallSpeed'] ?? '').toString();
+        _reverseMotorController.text =
+            (data['AzReverseMotor'] ?? '').toString();
+        _accellTimeController.text = (data['AzAccellTime'] ?? '').toString();
+        _motorRatioController.text = (data['AzMotorRatio'] ?? '').toString();
+        _driveRatioController.text = (data['AzDriveRatio'] ?? '').toString();
+        _encoderPPRController.text = (data['AzEncodePPR'] ?? '').toString();
+        _degreeToScaleController.text =
+            (data['AzDegreetoScale'] ?? '').toString();
+        _deadBandController.text = (data['AzDeadBand'] ?? '').toString();
         _selectedTrackerControl = 'Off';
       });
     } else {
@@ -97,7 +99,8 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                     child: DropdownButton<String>(
                       dropdownColor: Colors.grey[800],
                       value: _selectedTrackerControl,
-                      icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      icon:
+                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
                       style: const TextStyle(color: Colors.white),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -123,7 +126,8 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

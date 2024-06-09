@@ -24,10 +24,14 @@ class _ZenithSettingsState extends State<ZenithSettings> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _zenithNegLimit.text = data['ZeNegLimit'] ?? '';
-        _zenithOffset.text = data['ZeOffset'] ?? '';
-        _zenithPark.text = data['ZePark'] ?? '';
-        _zenithPosLimit.text = data['ZePosLimit'] ?? '';
+        _zenithNegLimit.text = (data['ZeNegLimit'] ?? '').toString();
+        ;
+        _zenithOffset.text = (data['ZeOffset'] ?? '').toString();
+        ;
+        _zenithPark.text = (data['ZePark'] ?? '').toString();
+        ;
+        _zenithPosLimit.text = (data['ZePosLimit'] ?? '').toString();
+        ;
       });
     } else {
       // Handle the error
@@ -46,7 +50,8 @@ class _ZenithSettingsState extends State<ZenithSettings> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Zenith settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Zenith settings',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -68,7 +73,8 @@ class _ZenithSettingsState extends State<ZenithSettings> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

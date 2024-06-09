@@ -37,14 +37,22 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _zeMotorRatio.text = data['ZeMotorRatio'] ?? '';
-        _zeAccellTime.text = data['ZeAccellTime'] ?? '';
-        _zeDriveRatio.text = data['ZeDriveRatio'] ?? '';
-        _zeEncoderPPR.text = data['ZeEncodePPR'] ?? '';
-        _zeDegreeToScale.text = data['ZeDegreetoScale'] ?? '';
-        _zeStallSpeed.text = data['ZeStallSpeed'] ?? '';
-        _zeReverseMotor.text = data['ZeReverseMotor'] ?? '';
-        _zeDeadBand.text = data['ZeDeadBand'] ?? '';
+        _zeMotorRatio.text = (data['ZeMotorRatio'] ?? '').toString();
+        ;
+        _zeAccellTime.text = (data['ZeAccellTime'] ?? '').toString();
+        ;
+        _zeDriveRatio.text = (data['ZeDriveRatio'] ?? '').toString();
+        ;
+        _zeEncoderPPR.text = (data['ZeEncodePPR'] ?? '').toString();
+        ;
+        _zeDegreeToScale.text = (data['ZeDegreetoScale'] ?? '').toString();
+        ;
+        _zeStallSpeed.text = (data['ZeStallSpeed'] ?? '').toString();
+        ;
+        _zeReverseMotor.text = (data['ZeReverseMotor'] ?? '').toString();
+        ;
+        _zeDeadBand.text = (data['ZeDeadBand'] ?? '').toString();
+        ;
         _selectedTrackerControl = 'Off';
       });
     } else {
@@ -95,7 +103,8 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
                     child: DropdownButton<String>(
                       dropdownColor: Colors.grey[800],
                       value: _selectedTrackerControl,
-                      icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      icon:
+                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
                       style: const TextStyle(color: Colors.white),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -121,7 +130,8 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

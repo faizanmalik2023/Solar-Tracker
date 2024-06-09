@@ -62,7 +62,7 @@ class TrackerSettingsPage extends StatelessWidget {
   Padding _buildListTile(BuildContext context, String title, Widget page) {
     return Padding(
       padding: const EdgeInsets.only(left: 13.0, right: 13, bottom: 15),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: Colors.grey[900]),
         child: ListTile(
@@ -78,7 +78,7 @@ class TrackerSettingsPage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => page),
+              MaterialPageRoute<Widget>(builder: (context) => page),
             );
           },
         ),

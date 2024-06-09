@@ -25,11 +25,16 @@ class _TrackerControlState extends State<TrackerControl> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _trackerState.text = data['TrackerState'] ?? '';
-        _trackerNight.text = data['TrackerNight'] ?? '';
-        _trackerWind.text = data['TrackerWind'] ?? '';
-        _trackerElevation.text = data['Elevation'] ?? '';
-        _trackerDelay.text = data['Trackdelay'] ?? '';
+        _trackerState.text = (data['TrackerState'] ?? '').toString();
+        ;
+        _trackerNight.text = (data['TrackerNight'] ?? '').toString();
+        ;
+        _trackerWind.text = (data['TrackerWind'] ?? '').toString();
+        ;
+        _trackerElevation.text = (data['Elevation'] ?? '').toString();
+        ;
+        _trackerDelay.text = (data['Trackdelay'] ?? '').toString();
+        ;
       });
     } else {
       // Handle the error
@@ -48,7 +53,8 @@ class _TrackerControlState extends State<TrackerControl> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Tracker Controls', style: TextStyle(color: Colors.white)),
+        title: const Text('Tracker Controls',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -71,7 +77,8 @@ class _TrackerControlState extends State<TrackerControl> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

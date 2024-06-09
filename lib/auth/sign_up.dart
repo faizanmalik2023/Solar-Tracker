@@ -31,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
       });
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SignInPage()),
+        MaterialPageRoute<SignInPage>(builder: (context) => SignInPage()),
       );
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -53,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Solar Controller",
+                'Solar Controller',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -62,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               const SizedBox(height: 16),
               const Text(
-                "Register with Email and Password",
+                'Register with Email and Password',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white70,

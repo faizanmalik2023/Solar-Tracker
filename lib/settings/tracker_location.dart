@@ -31,11 +31,16 @@ class _TrackerLocationState extends State<TrackerLocation> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        _trackerLat.text = data['Lat'] ?? '';
-        _trackerLong.text = data['Long'] ?? '';
-        _timeZone.text = data['TimeZone'] ?? '';
-        _trackerElevation.text = data['Elevation'] ?? '';
-        _trackerDelay.text = data['Trackdelay'] ?? '';
+        _trackerLat.text = (data['Lat'] ?? '').toString();
+        ;
+        _trackerLong.text = (data['Long'] ?? '').toString();
+        ;
+        _timeZone.text = (data['TimeZone'] ?? '').toString();
+        ;
+        _trackerElevation.text = (data['Elevation'] ?? '').toString();
+        ;
+        _trackerDelay.text = (data['Trackdelay'] ?? '').toString();
+        ;
       });
     } else {
       // Handle the error
@@ -73,7 +78,8 @@ class _TrackerLocationState extends State<TrackerLocation> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   child: const Text(

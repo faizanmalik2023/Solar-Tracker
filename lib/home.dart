@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:solar_tracker/tracker_settings.dart';
-import 'bluetooth_page.dart';
+import 'package:solar_tracker/utilities/bluetooth_page.dart';
+import 'package:solar_tracker/utilities/tracker_settings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,7 +21,11 @@ class _HomePageState extends State<HomePage> {
   String trackerZenith = '';
   String wind = '';
   String _selectedTrackerControl = 'Option 1'; // Default selected value
-  final List<String> _trackerControlOptions = ['Option 1', 'Option 2', 'Option 3'];
+  final List<String> _trackerControlOptions = [
+    'Option 1',
+    'Option 2',
+    'Option 3'
+  ];
   Timer? _timer;
   int _timerValue = 0; // Global variable to store the timer value
 
@@ -45,25 +48,22 @@ class _HomePageState extends State<HomePage> {
 
   void _stopTimer() {
     _timer?.cancel();
-    // setState(() {
-    //   _timerValue = 0; // Reset the timer value if needed
-    // });
     print(_timerValue);
   }
 
-
   Future<void> _fetchTrackerPosition() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        sunAzimuth = double.parse(data['SunAzimuth']).toStringAsFixed(2);
-        sunZenith = double.parse(data['SunZenith']).toStringAsFixed(2);
-        temperature = double.parse(data['Temperature']).toStringAsFixed(2);
-        trackerAzimuth = double.parse(data['TrackerAzimuth']).toStringAsFixed(2);
-        trackerZenith = double.parse(data['TrackerZenith']).toStringAsFixed(2);
-        wind = double.parse(data['Wind']).toStringAsFixed(2);
+        sunAzimuth = data['SunAzimuth'].toString();
+        sunZenith = data['SunZenith'].toString();
+        temperature = data['Temperature'].toString();
+        trackerAzimuth = data['TrackerAzimuth'].toString();
+        trackerZenith = data['TrackerZenith'].toString();
+        wind = data['Wind'].toString();
       });
     } else {
       // Handle the error
@@ -72,9 +72,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<FlSpot> _generateDataPoints(String value) {
-    // Generate some example data points. You should replace this with your actual data.
     double parsedValue = double.tryParse(value) ?? 0.0;
-    return List.generate(10, (index) => FlSpot(index.toDouble(), parsedValue + index.toDouble()));
+    return List.generate(10,
+        (index) => FlSpot(index.toDouble(), parsedValue + index.toDouble()));
   }
 
   @override
@@ -90,17 +90,22 @@ class _HomePageState extends State<HomePage> {
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const ConnectBluetoothTrackerPage()));
+                    context,
+                    MaterialPageRoute<ConnectBluetoothTrackerPage>(
+                        builder: (context) =>
+                            const ConnectBluetoothTrackerPage()));
               },
               child: const Icon(Icons.bluetooth, size: 30),
             ),
           ),
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const TrackerSettingsPage()));
+                    context,
+                    MaterialPageRoute<TrackerSettingsPage>(
+                        builder: (context) => const TrackerSettingsPage()));
               },
               child: const Icon(Icons.settings, size: 30),
             ),
@@ -116,19 +121,25 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              Text('Temperature (C): $temperature °C', style: const TextStyle(color: Colors.white, fontSize: 18)),
+              Text('Temperature (C): $temperature °C',
+                  style: const TextStyle(color: Colors.white, fontSize: 18)),
               const SizedBox(height: 10),
-              Text('Wind: $wind Km/h', style: const TextStyle(color: Colors.white, fontSize: 18)),
+              Text('Wind: $wind Km/h',
+                  style: const TextStyle(color: Colors.white, fontSize: 18)),
               const SizedBox(height: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
                     'Tracker Control',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 2.0),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(8.0),
@@ -138,14 +149,17 @@ class _HomePageState extends State<HomePage> {
                       child: DropdownButton<String>(
                         dropdownColor: Colors.grey[900],
                         value: _selectedTrackerControl,
-                        icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.grey),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 16),
                         onChanged: (String? newValue) {
                           setState(() {
                             _selectedTrackerControl = newValue!;
                           });
                         },
-                        items: _trackerControlOptions.map<DropdownMenuItem<String>>((String value) {
+                        items: _trackerControlOptions
+                            .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -157,15 +171,20 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 10),
-              Text('Tracker Azimuth: $trackerAzimuth', style: const TextStyle(color: Colors.white)),
-              Text('Tracker Zenith: $trackerZenith', style: const TextStyle(color: Colors.white)),
+              Text('Tracker Azimuth: $trackerAzimuth',
+                  style: const TextStyle(color: Colors.white)),
+              Text('Tracker Zenith: $trackerZenith',
+                  style: const TextStyle(color: Colors.white)),
               const SizedBox(height: 10),
               _buildGraphSection('Sun Zenith', sunZenith, 'Zenith', 'Time'),
               _buildGraphSection('Sun Azimuth', sunAzimuth, 'Azimuth', 'Time'),
-              Text('Sun Azimuth: $sunAzimuth', style: const TextStyle(color: Colors.white, fontSize: 16)),
-              Text('Sun Zenith: $sunZenith', style: const TextStyle(color: Colors.white, fontSize: 16)),
-
-              const SizedBox(height: 20,),
+              Text('Sun Azimuth: $sunAzimuth',
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
+              Text('Sun Zenith: $sunZenith',
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -181,20 +200,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: const Text('Start'),
                   ),
-                const SizedBox(width: 10,),
-              ElevatedButton(
-                onPressed: _stopTimer,
-                //onPressed: _signIn,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[800],
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(100, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
+                  const SizedBox(
+                    width: 10,
                   ),
-                ),
-                child: const Text('Stop'),
-              ),
+                  ElevatedButton(
+                    onPressed: _stopTimer,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[800],
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(100, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                    ),
+                    child: const Text('Stop'),
+                  ),
                 ],
               ),
             ],
@@ -204,14 +224,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGraphSection(String title, String zenithValue, String yAxisLabel, String xAxisLabel) {
+  Widget _buildGraphSection(
+      String title, String zenithValue, String yAxisLabel, String xAxisLabel) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         Container(
@@ -223,11 +245,13 @@ class _HomePageState extends State<HomePage> {
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
                   sideTitles: const SideTitles(showTitles: true),
-                  axisNameWidget: Text(yAxisLabel, style: const TextStyle(color: Colors.white)),
+                  axisNameWidget: Text(yAxisLabel,
+                      style: const TextStyle(color: Colors.white)),
                 ),
                 bottomTitles: AxisTitles(
                   sideTitles: const SideTitles(showTitles: true),
-                  axisNameWidget: Text(xAxisLabel, style: const TextStyle(color: Colors.white)),
+                  axisNameWidget: Text(xAxisLabel,
+                      style: const TextStyle(color: Colors.white)),
                 ),
               ),
               borderData: FlBorderData(show: true),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:solar_tracker/firebase_options.dart';
+import 'package:solar_tracker/utilities/firebase_options.dart';
 import 'Auth/sign_in.dart';
 
 void main() async {
