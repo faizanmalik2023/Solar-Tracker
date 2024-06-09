@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Helping Widgets/textfield_widget.dart';
+
+import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
 
 class TrackerControl extends StatefulWidget {
   const TrackerControl({super.key});
@@ -13,12 +14,13 @@ class TrackerControl extends StatefulWidget {
 class _TrackerControlState extends State<TrackerControl> {
   final TextEditingController _trackerState = TextEditingController();
   final TextEditingController _trackerNight = TextEditingController();
-  final TextEditingController _trackerWind= TextEditingController();
-  final TextEditingController _trackerElevation= TextEditingController();
-  final TextEditingController _trackerDelay= TextEditingController();
+  final TextEditingController _trackerWind = TextEditingController();
+  final TextEditingController _trackerElevation = TextEditingController();
+  final TextEditingController _trackerDelay = TextEditingController();
 
   Future<void> _fetchTrackerControls() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/trackercontrol'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/trackercontrol'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -34,17 +36,19 @@ class _TrackerControlState extends State<TrackerControl> {
       throw Exception('Failed to load azimuth settings');
     }
   }
+
   @override
   void initState() {
     super.initState();
     _fetchTrackerControls();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Tracker Controls', style: TextStyle(color: Colors.white)),
+        title: const Text('Tracker Controls', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -59,9 +63,6 @@ class _TrackerControlState extends State<TrackerControl> {
               buildTextField('Tracker Wind', _trackerWind),
               buildTextField('Tracker Elevation', _trackerElevation),
               buildTextField('Tracker Delay', _trackerDelay),
-
-
-
               const SizedBox(height: 40),
               Center(
                 child: ElevatedButton(
@@ -70,10 +71,13 @@ class _TrackerControlState extends State<TrackerControl> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Save Changes', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

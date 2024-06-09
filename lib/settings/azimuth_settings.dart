@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Helping Widgets/textfield_widget.dart';
+
+import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
+
 class AzimuthSettings extends StatefulWidget {
   const AzimuthSettings({super.key});
 
@@ -10,13 +12,13 @@ class AzimuthSettings extends StatefulWidget {
 }
 
 class _AzimuthSettingsState extends State<AzimuthSettings> {
-
   final TextEditingController _azimuthNegLimit = TextEditingController();
   final TextEditingController _azimuthOffset = TextEditingController();
   final TextEditingController _azimuthPark = TextEditingController();
-  final TextEditingController _azimuthPosLimit= TextEditingController();
+  final TextEditingController _azimuthPosLimit = TextEditingController();
   Future<void> _fetchAzimuthSettings() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/azimuthsettings'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/azimuthsettings'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -31,6 +33,7 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
       throw Exception('Failed to load azimuth settings');
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +45,7 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Azimuth Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Azimuth settings', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -56,8 +59,6 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
               buildTextField('Azimuth Offset', _azimuthOffset),
               buildTextField('Park Position', _azimuthPark),
               buildTextField('Positive Limit', _azimuthPosLimit),
-
-
               const SizedBox(height: 40),
               Center(
                 child: ElevatedButton(
@@ -66,10 +67,13 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Save Changes', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

@@ -14,7 +14,7 @@ class _GeneralPageState extends State<GeneralPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
-        title: Text(
+        title: const Text(
           'General Page',style: TextStyle(
           color: Colors.white
         ),

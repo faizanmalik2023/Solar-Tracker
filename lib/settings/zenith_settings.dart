@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Helping Widgets/textfield_widget.dart';
+
+import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
 
 class ZenithSettings extends StatefulWidget {
   const ZenithSettings({super.key});
@@ -13,12 +14,12 @@ class ZenithSettings extends StatefulWidget {
 class _ZenithSettingsState extends State<ZenithSettings> {
   final TextEditingController _zenithNegLimit = TextEditingController();
   final TextEditingController _zenithOffset = TextEditingController();
-  final TextEditingController _zenithPark= TextEditingController();
-  final TextEditingController _zenithPosLimit= TextEditingController();
-
+  final TextEditingController _zenithPark = TextEditingController();
+  final TextEditingController _zenithPosLimit = TextEditingController();
 
   Future<void> _fetchZenithSettings() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/zenithsettings'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/zenithsettings'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -33,17 +34,19 @@ class _ZenithSettingsState extends State<ZenithSettings> {
       throw Exception('Failed to load azimuth settings');
     }
   }
+
   @override
   void initState() {
     super.initState();
     _fetchZenithSettings();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Zenith Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Zenith settings', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -65,10 +68,13 @@ class _ZenithSettingsState extends State<ZenithSettings> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Save Changes', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

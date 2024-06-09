@@ -4,11 +4,15 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 class ConnectBluetoothTrackerPage extends StatefulWidget {
+  const ConnectBluetoothTrackerPage({super.key});
+
   @override
-  _ConnectBluetoothTrackerPageState createState() => _ConnectBluetoothTrackerPageState();
+  _ConnectBluetoothTrackerPageState createState() =>
+      _ConnectBluetoothTrackerPageState();
 }
 
-class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPage> {
+class _ConnectBluetoothTrackerPageState
+    extends State<ConnectBluetoothTrackerPage> {
   //FlutterBluePlus flutterBlue = FlutterBluePlus.adapterName;
   bool _bluetoothEnabled = false;
   List<BluetoothDevice> connectedDevices = [];
@@ -37,7 +41,8 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
     }
 
     // Handle Bluetooth on & off
-    _adapterStateSubscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+    _adapterStateSubscription =
+        FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
       setState(() {
         _bluetoothEnabled = (state == BluetoothAdapterState.on);
       });
@@ -55,7 +60,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
     //   });
     // });
     setState(() {
-      connectedDevices=FlutterBluePlus.connectedDevices;
+      connectedDevices = FlutterBluePlus.connectedDevices;
     });
 
     // Listen to scan results
@@ -80,7 +85,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
   }
 
   void _startScan() {
-    FlutterBluePlus.startScan(timeout: Duration(seconds: 4));
+    FlutterBluePlus.startScan(timeout: const Duration(seconds: 4));
   }
 
   void _stopScan() {
@@ -94,7 +99,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Connect Bluetooth Tracker'),
+        title: const Text('Connect Bluetooth Tracker'),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -106,7 +111,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Enable Bluetooth',
                   style: TextStyle(
                     color: Colors.white,
@@ -120,12 +125,12 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
                 ),
               ],
             ),
-            Divider(color: Colors.white),
+            const Divider(color: Colors.white),
             Text(
               '[${connectedDevices.length} List Items]',
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
-            Text(
+            const Text(
               'Connected Devices',
               style: TextStyle(
                 color: Colors.white,
@@ -133,7 +138,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
+            const Text(
               'Finding...',
               style: TextStyle(color: Colors.grey),
             ),
@@ -145,14 +150,14 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
                     color: Colors.teal,
                     child: ListTile(
                       title: Text(
-                        connectedDevices[index].name,
-                        style: TextStyle(color: Colors.white),
+                        connectedDevices[index].platformName,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       subtitle: Text(
-                        connectedDevices[index].id.toString(),
-                        style: TextStyle(color: Colors.white70),
+                        connectedDevices[index].remoteId.toString(),
+                        style: const TextStyle(color: Colors.white70),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.signal_cellular_alt,
                         color: Colors.white,
                       ),
@@ -166,9 +171,9 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
             ),
             Text(
               '[${scanResults.length} List Items]',
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
-            Text(
+            const Text(
               'Devices',
               style: TextStyle(
                 color: Colors.white,
@@ -176,7 +181,7 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
+            const Text(
               'Scanning...',
               style: TextStyle(color: Colors.grey),
             ),
@@ -189,14 +194,14 @@ class _ConnectBluetoothTrackerPageState extends State<ConnectBluetoothTrackerPag
                     color: Colors.teal,
                     child: ListTile(
                       title: Text(
-                        device.name,
-                        style: TextStyle(color: Colors.white),
+                        device.platformName,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       subtitle: Text(
-                        device.id.toString(),
-                        style: TextStyle(color: Colors.white70),
+                        device.remoteId.toString(),
+                        style: const TextStyle(color: Colors.white70),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.signal_cellular_alt,
                         color: Colors.white,
                       ),

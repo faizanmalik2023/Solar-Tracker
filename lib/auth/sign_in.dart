@@ -4,6 +4,8 @@ import 'package:solar_tracker/Auth/sign_up.dart';
 import 'package:solar_tracker/home.dart';
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -14,14 +16,14 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _signIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -60,50 +62,53 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    labelStyle: TextStyle(color: Colors.white),
+                    labelStyle: const TextStyle(color: Colors.white),
                     filled: true,
                     fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.blue),
+                      borderSide: const BorderSide(color: Colors.blue),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 25.0),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 25.0),
                   ),
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    labelStyle: TextStyle(color: Colors.white),
+                    labelStyle: const TextStyle(color: Colors.white),
                     filled: true,
                     fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(color: Colors.blue),
+                      borderSide: const BorderSide(color: Colors.blue),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                    suffixIcon: Icon(Icons.visibility_off, color: Colors.white),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16.0),
+                    suffixIcon:
+                        const Icon(Icons.visibility_off, color: Colors.white),
                   ),
                   obscureText: true,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
@@ -111,12 +116,12 @@ class _SignInPageState extends State<SignInPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
                     foregroundColor: Colors.white,
-                    minimumSize: Size(200, 50),
+                    minimumSize: const Size(200, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
                     ),
                   ),
-                  child: Text('Sign In'),
+                  child: const Text('Sign In'),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
@@ -126,7 +131,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => SignUpPage()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Forgot Password?',
                     style: TextStyle(color: Colors.white70),
                   ),

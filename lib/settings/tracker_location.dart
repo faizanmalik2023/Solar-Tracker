@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../Helping Widgets/textfield_widget.dart';
+import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
 
 class TrackerLocation extends StatefulWidget {
   const TrackerLocation({super.key});
@@ -25,7 +25,8 @@ class _TrackerLocationState extends State<TrackerLocation> {
   }
 
   Future<void> _fetchAzimuthMotorSettings() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/trackerlocation'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/trackerlocation'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -35,7 +36,6 @@ class _TrackerLocationState extends State<TrackerLocation> {
         _timeZone.text = data['TimeZone'] ?? '';
         _trackerElevation.text = data['Elevation'] ?? '';
         _trackerDelay.text = data['Trackdelay'] ?? '';
-
       });
     } else {
       // Handle the error
@@ -48,7 +48,8 @@ class _TrackerLocationState extends State<TrackerLocation> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Azimuth Motor Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Azimuth Motor settings',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -63,7 +64,6 @@ class _TrackerLocationState extends State<TrackerLocation> {
               buildTextField('Time Zone', _timeZone),
               buildTextField('Elevation', _trackerElevation),
               buildTextField('Tracker Delay', _trackerDelay),
-
               const SizedBox(height: 20),
               const SizedBox(height: 40),
               Center(
@@ -73,10 +73,13 @@ class _TrackerLocationState extends State<TrackerLocation> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Save Changes', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

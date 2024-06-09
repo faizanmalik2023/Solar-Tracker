@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../Helping Widgets/textfield_widget.dart';
+import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
+
 class AzimuthMotorSettingsPage extends StatefulWidget {
+  const AzimuthMotorSettingsPage({super.key});
+
   @override
-  _AzimuthMotorSettingsPageState createState() => _AzimuthMotorSettingsPageState();
+  _AzimuthMotorSettingsPageState createState() =>
+      _AzimuthMotorSettingsPageState();
 }
 
 class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
@@ -15,7 +19,8 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   final TextEditingController _motorRatioController = TextEditingController();
   final TextEditingController _driveRatioController = TextEditingController();
   final TextEditingController _encoderPPRController = TextEditingController();
-  final TextEditingController _degreeToScaleController = TextEditingController();
+  final TextEditingController _degreeToScaleController =
+      TextEditingController();
   final TextEditingController _deadBandController = TextEditingController();
 
   String _selectedTrackerControl = 'Off'; // Default selected value
@@ -28,7 +33,8 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   }
 
   Future<void> _fetchAzimuthMotorSettings() async {
-    final response = await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
+    final response =
+        await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -41,7 +47,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
         _encoderPPRController.text = data['AzEncodePPR'] ?? '';
         _degreeToScaleController.text = data['AzDegreetoScale'] ?? '';
         _deadBandController.text = data['AzDeadBand'] ?? '';
-        _selectedTrackerControl =  'Off';
+        _selectedTrackerControl = 'Off';
       });
     } else {
       // Handle the error
@@ -54,7 +60,8 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Azimuth Motor Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Azimuth Motor settings',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
       ),
@@ -73,11 +80,14 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
               buildTextField('Degree to Scale', _degreeToScaleController),
               buildTextField('Dead Band', _deadBandController),
               const SizedBox(height: 20),
-              Center(child: Text('Tracker Control', style: TextStyle(color: Colors.white, fontSize: 18))),
+              const Center(
+                  child: Text('Tracker Control',
+                      style: TextStyle(color: Colors.white, fontSize: 18))),
               const SizedBox(height: 10),
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 3.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 3.0),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(8.0),
@@ -87,14 +97,15 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                     child: DropdownButton<String>(
                       dropdownColor: Colors.grey[800],
                       value: _selectedTrackerControl,
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
-                      style: TextStyle(color: Colors.white),
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      style: const TextStyle(color: Colors.white),
                       onChanged: (String? newValue) {
                         setState(() {
                           _selectedTrackerControl = newValue!;
                         });
                       },
-                      items: _trackerControlOptions.map<DropdownMenuItem<String>>((String value) {
+                      items: _trackerControlOptions
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -112,10 +123,13 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[800],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Save Changes', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
@@ -124,6 +138,4 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
       ),
     );
   }
-
-
 }
