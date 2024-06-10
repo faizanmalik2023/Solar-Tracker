@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 import 'dart:io' show Platform;
 import 'package:solar_tracker/helping_widgets/show_manual_turn_off_dialog.dart';
+import 'package:logger/logger.dart';
 
 final bluetoothProvider =
     StateNotifierProvider<BluetoothNotifier, BluetoothState>(
@@ -47,10 +49,11 @@ class BluetoothNotifier extends StateNotifier<BluetoothState> {
     _initBluetooth();
   }
   final Ref ref;
+  final Logger logger = Logger();
 
   void _initBluetooth() async {
     if (await FlutterBluePlus.isSupported == false) {
-      print('Bluetooth not supported by this device');
+      logger.e('Bluetooth not supported by this device');
       return;
     }
 
@@ -76,40 +79,43 @@ class BluetoothNotifier extends StateNotifier<BluetoothState> {
   }
 
   void toggleBluetooth(BuildContext context, bool value) async {
-    if (value) {
-      if (Platform.isAndroid) {
-        await FlutterBluePlus.turnOn();
-      } else if (Platform.isIOS) {
-        showDialog<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Bluetooth'),
-              content: const Text(
-                  'iOS does not support programmatically turning on Bluetooth. Please turn it on manually from the settings.'),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      }
-    } else {
-      if (Platform.isAndroid) {
-        await FlutterBluePlus.turnOff();
-      } else if (Platform.isIOS) {
+    try {
+      if (value) {
+        if (Platform.isAndroid) {
+          await FlutterBluePlus.turnOn();
+        } else if (Platform.isIOS) {
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Bluetooth'),
+                content: const Text(
+                    'iOS does not support programmatically turning on Bluetooth. Please turn it on manually from the settings.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          return;
+        }
+      } else {
         showManualTurnOffDialog(context);
       }
-    }
 
-    if (Platform.isAndroid) {
-      state = this.state.copyWith(bluetoothEnabled: value);
+      if (Platform.isAndroid) {
+        state = this.state.copyWith(bluetoothEnabled: value);
+      }
+    } catch (e) {
+      logger.e('Error toggling Bluetooth: $e');
+      CustomToast.showToast(
+        'Error toggling Bluetooth',
+      );
     }
   }
 
@@ -117,6 +123,11 @@ class BluetoothNotifier extends StateNotifier<BluetoothState> {
     state = this.state.copyWith(isLoading: true);
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 4)).then((_) {
       state = this.state.copyWith(isLoading: false);
+    }).catchError((e) {
+      logger.e('Error starting scan: $e');
+      CustomToast.showToast(
+        'Error starting scan',
+      );
     });
   }
 
@@ -126,22 +137,37 @@ class BluetoothNotifier extends StateNotifier<BluetoothState> {
   }
 
   Future<void> connectToDevice(BluetoothDevice device) async {
-    for (var connectedDevice in state.connectedDevices) {
-      await connectedDevice.disconnect();
+    try {
+      for (var connectedDevice in state.connectedDevices) {
+        await connectedDevice.disconnect();
+      }
+
+      await device.connect();
+
+      state = this.state.copyWith(
+            scanResults: state.scanResults
+                .where((result) => result.device.remoteId != device.remoteId)
+                .toList(),
+          );
+      fetchConnectedDevices();
+    } catch (e) {
+      logger.e('Error connecting to device: $e');
+      CustomToast.showToast(
+        'Error connecting to device',
+      );
     }
-
-    await device.connect();
-
-    state = this.state.copyWith(
-          scanResults: state.scanResults
-              .where((result) => result.device.remoteId != device.remoteId)
-              .toList(),
-        );
-    fetchConnectedDevices();
   }
 
   void disconnectFromDevice(BluetoothDevice device) async {
-    await device.disconnect();
-    fetchConnectedDevices();
+    try {
+      await device.disconnect();
+      fetchConnectedDevices();
+      startScan();
+    } catch (e) {
+      logger.e('Error disconnecting from device: $e');
+      CustomToast.showToast(
+        'Error disconnecting from device',
+      );
+    }
   }
 }

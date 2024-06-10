@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 import 'package:solar_tracker/providers/bluetooth_provider.dart';
+import 'package:solar_tracker/constants.dart';
+import 'package:logger/logger.dart';
 
-class ConnectBluetoothTrackerPage extends ConsumerWidget {
-  const ConnectBluetoothTrackerPage({super.key});
+class ConnectBluetoothPage extends ConsumerWidget {
+  const ConnectBluetoothPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bluetoothState = ref.watch(bluetoothProvider);
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+    final Logger logger = Logger();
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Connect Bluetooth Tracker'),
-        backgroundColor: Colors.grey[900],
+        backgroundColor: kSecondary,
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -35,38 +40,56 @@ class ConnectBluetoothTrackerPage extends ConsumerWidget {
                   value: bluetoothState.bluetoothEnabled,
                   onChanged: (value) {
                     bluetoothNotifier.toggleBluetooth(context, value);
+                    logger.i('Bluetooth toggled: $value');
+                    CustomToast.showToast(
+                      value ? 'Bluetooth Enabled' : 'Bluetooth Disabled',
+                    );
                   },
-                  activeColor: Colors.deepPurple,
+                  activeTrackColor: kTertiary,
+                  inactiveTrackColor: Colors.grey,
+                  activeColor: Colors.white,
+                  inactiveThumbColor: Colors.grey,
+                  thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(WidgetState.disabled)) {
+                      return Colors.grey;
+                    }
+                    if (states.contains(WidgetState.selected)) {
+                      return Colors.white;
+                    }
+                    return Colors.white;
+                  }),
                 ),
               ],
             ),
             const Divider(color: Colors.white),
             if (bluetoothState.isLoading)
-              Center(child: CircularProgressIndicator())
+              Center(child: CircularProgressIndicator(color: kTertiary))
             else
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '[${bluetoothState.connectedDevices.length} List Items]',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const Text(
-                      'Connected Devices',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '[${bluetoothState.connectedDevices.length} device(s) connected]',
+                        style: const TextStyle(color: Colors.grey),
                       ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
+                      const Text(
+                        'Connected Devices',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
                         itemCount: bluetoothState.connectedDevices.length,
                         itemBuilder: (context, index) {
                           final device = bluetoothState.connectedDevices[index];
                           return Card(
-                            color: Colors.teal,
+                            color: kTertiary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -77,6 +100,11 @@ class ConnectBluetoothTrackerPage extends ConsumerWidget {
                                 onTap: () {
                                   bluetoothNotifier
                                       .disconnectFromDevice(device);
+                                  logger.i(
+                                      'Disconnected from ${device.platformName}');
+                                  CustomToast.showToast(
+                                    'Disconnected from ${device.platformName}',
+                                  );
                                 },
                                 child: ListTile(
                                   title: Text(
@@ -98,27 +126,27 @@ class ConnectBluetoothTrackerPage extends ConsumerWidget {
                           );
                         },
                       ),
-                    ),
-                    Text(
-                      '[${bluetoothState.scanResults.length} List Items]',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const Text(
-                      'Available Devices',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        '[${bluetoothState.scanResults.length} device(s) available]',
+                        style: const TextStyle(color: Colors.grey),
                       ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
+                      const Text(
+                        'Available Devices',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
                         itemCount: bluetoothState.scanResults.length,
                         itemBuilder: (context, index) {
                           final device =
                               bluetoothState.scanResults[index].device;
                           return Card(
-                            color: Colors.teal,
+                            color: kPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -128,6 +156,11 @@ class ConnectBluetoothTrackerPage extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(8.0),
                                 onTap: () {
                                   bluetoothNotifier.connectToDevice(device);
+                                  logger.i(
+                                      'Connecting to ${device.platformName}');
+                                  CustomToast.showToast(
+                                    'Connecting to ${device.platformName}',
+                                  );
                                 },
                                 child: ListTile(
                                   title: Text(
@@ -149,14 +182,14 @@ class ConnectBluetoothTrackerPage extends ConsumerWidget {
                           );
                         },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
           ],
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: kPrimary,
     );
   }
 }

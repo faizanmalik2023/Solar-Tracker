@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
+import 'package:logger/logger.dart';
+import 'package:solar_tracker/helping_widgets/custom_text_field.dart';
+import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
+import 'package:solar_tracker/constants.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 
 class AzimuthMotorSettingsPage extends StatefulWidget {
   const AzimuthMotorSettingsPage({super.key});
@@ -22,6 +25,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   final TextEditingController _degreeToScaleController =
       TextEditingController();
   final TextEditingController _deadBandController = TextEditingController();
+  final Logger _logger = Logger();
 
   String _selectedTrackerControl = 'Off'; // Default selected value
   final List<String> _trackerControlOptions = ['Off', 'On'];
@@ -33,38 +37,58 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   }
 
   Future<void> _fetchAzimuthMotorSettings() async {
-    final response =
-        await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
+    try {
+      final response =
+          await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        _stallSpeedController.text = (data['AzStallSpeed'] ?? '').toString();
-        _reverseMotorController.text =
-            (data['AzReverseMotor'] ?? '').toString();
-        _accellTimeController.text = (data['AzAccellTime'] ?? '').toString();
-        _motorRatioController.text = (data['AzMotorRatio'] ?? '').toString();
-        _driveRatioController.text = (data['AzDriveRatio'] ?? '').toString();
-        _encoderPPRController.text = (data['AzEncodePPR'] ?? '').toString();
-        _degreeToScaleController.text =
-            (data['AzDegreetoScale'] ?? '').toString();
-        _deadBandController.text = (data['AzDeadBand'] ?? '').toString();
-        _selectedTrackerControl = 'Off';
-      });
-    } else {
-      // Handle the error
-      throw Exception('Failed to load azimuth motor settings');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _stallSpeedController.text = (data['AzStallSpeed'] ?? '').toString();
+          _reverseMotorController.text =
+              (data['AzReverseMotor'] ?? '').toString();
+          _accellTimeController.text = (data['AzAccellTime'] ?? '').toString();
+          _motorRatioController.text = (data['AzMotorRatio'] ?? '').toString();
+          _driveRatioController.text = (data['AzDriveRatio'] ?? '').toString();
+          _encoderPPRController.text = (data['AzEncodePPR'] ?? '').toString();
+          _degreeToScaleController.text =
+              (data['AzDegreetoScale'] ?? '').toString();
+          _deadBandController.text = (data['AzDeadBand'] ?? '').toString();
+          _selectedTrackerControl = 'Off';
+        });
+      } else {
+        _logger
+            .e('Failed to load azimuth motor settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to load azimuth motor settings');
+        throw Exception('Failed to load azimuth motor settings');
+      }
+    } catch (e) {
+      _logger.e('Error fetching azimuth motor settings: $e');
+      CustomToast.showToast('Error fetching azimuth motor settings');
     }
+  }
+
+  @override
+  void dispose() {
+    _stallSpeedController.dispose();
+    _reverseMotorController.dispose();
+    _accellTimeController.dispose();
+    _motorRatioController.dispose();
+    _driveRatioController.dispose();
+    _encoderPPRController.dispose();
+    _degreeToScaleController.dispose();
+    _deadBandController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: kPrimary,
       appBar: AppBar(
-        title: const Text('Azimuth Motor settings',
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.grey[900],
+        centerTitle: true,
+        title: const Text('Azimuth Motor Settings'),
+        backgroundColor: kSecondary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -73,14 +97,45 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildTextField('Stall Speed', _stallSpeedController),
-              buildTextField('Reverse Motor', _reverseMotorController),
-              buildTextField('Accell Time', _accellTimeController),
-              buildTextField('Motor Ratio', _motorRatioController),
-              buildTextField('Drive Ratio', _driveRatioController),
-              buildTextField('Encoder PPR', _encoderPPRController),
-              buildTextField('Degree to Scale', _degreeToScaleController),
-              buildTextField('Dead Band', _deadBandController),
+              CustomTextField(
+                controller: _stallSpeedController,
+                labelText: 'Stall Speed',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _reverseMotorController,
+                labelText: 'Reverse Motor',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _accellTimeController,
+                labelText: 'Accell Time',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _motorRatioController,
+                labelText: 'Motor Ratio',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _driveRatioController,
+                labelText: 'Drive Ratio',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _encoderPPRController,
+                labelText: 'Encoder PPR',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _degreeToScaleController,
+                labelText: 'Degree to Scale',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _deadBandController,
+                labelText: 'Dead Band',
+              ),
               const SizedBox(height: 20),
               const Center(
                   child: Text('Tracker Control',
@@ -89,7 +144,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
               Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 3.0),
+                      horizontal: 12.0, vertical: 0.0),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(8.0),
@@ -118,23 +173,20 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Implement save functionality here
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 18),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomElevatedButton(
+                    text: 'Save Changes',
+                    onPressed: () {
+                      // Implement save functionality here
+                      CustomToast.showToast('Changes saved successfully');
+                    },
                   ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                ],
               ),
             ],
           ),

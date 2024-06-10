@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:solar_tracker/Auth/sign_up.dart';
 import 'package:solar_tracker/constants.dart';
+import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
+import 'package:solar_tracker/helping_widgets/custom_text_field.dart';
 import 'package:solar_tracker/home.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
@@ -45,15 +47,7 @@ class _SignInPageState extends State<SignInPage> {
           errorMessage = 'An unknown error occurred.';
       }
 
-      Fluttertoast.showToast(
-        msg: errorMessage,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      CustomToast.showToast(errorMessage);
 
       _logger.e('Error: $errorMessage');
     }
@@ -77,7 +71,6 @@ class _SignInPageState extends State<SignInPage> {
             child: Consumer(
               builder: (context, ref, child) {
                 final _obscureText = ref.watch(passwordVisibilityProvider);
-
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -98,93 +91,37 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    TextField(
+                    CustomTextField(
                       controller: _emailController,
-                      cursorColor: Colors.white,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: const TextStyle(color: Colors.white),
-                        filled: true,
-                        fillColor: kSecondary,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: const BorderSide(color: Colors.white),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(
-                            color: kTertiary,
-                          ),
-                        ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 25.0),
-                      ),
-                      style: const TextStyle(color: Colors.white),
+                      labelText: 'Email',
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    CustomTextField(
                       controller: _passwordController,
-                      cursorColor: Colors.white,
+                      labelText: 'Password',
                       obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: const TextStyle(color: Colors.white),
-                        filled: true,
-                        fillColor: kSecondary,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: const BorderSide(color: Colors.white),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.white,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(
-                            color: kTertiary,
-                          ),
-                        ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16.0),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            ref
-                                .read(passwordVisibilityProvider.notifier)
-                                .state = !_obscureText;
-                          },
-                        ),
+                        onPressed: () {
+                          ref.read(passwordVisibilityProvider.notifier).state =
+                              !_obscureText;
+                        },
                       ),
-                      style: const TextStyle(color: Colors.white),
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: _signIn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kTertiary,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(200, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomElevatedButton(
+                          text: 'Sign In',
+                          onPressed: _signIn,
                         ),
-                      ),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     TextButton(

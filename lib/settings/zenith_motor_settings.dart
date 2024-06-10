@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
+import 'package:logger/logger.dart';
+import 'package:solar_tracker/helping_widgets/custom_text_field.dart';
+import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
+import 'package:solar_tracker/constants.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 
 class ZenithMotorSettings extends StatefulWidget {
   const ZenithMotorSettings({super.key});
@@ -20,6 +23,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
   final TextEditingController _zeStallSpeed = TextEditingController();
   final TextEditingController _zeReverseMotor = TextEditingController();
   final TextEditingController _zeDeadBand = TextEditingController();
+  final Logger _logger = Logger();
 
   String _selectedTrackerControl = 'Off'; // Default selected value
   final List<String> _trackerControlOptions = ['Off', 'On'];
@@ -31,44 +35,56 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
   }
 
   Future<void> _fetchZenithMotorSettings() async {
-    final response =
-        await http.get(Uri.parse('http://174.89.157.173:5000/zenithmotor'));
+    try {
+      final response =
+          await http.get(Uri.parse('http://174.89.157.173:5000/zenithmotor'));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        _zeMotorRatio.text = (data['ZeMotorRatio'] ?? '').toString();
-        ;
-        _zeAccellTime.text = (data['ZeAccellTime'] ?? '').toString();
-        ;
-        _zeDriveRatio.text = (data['ZeDriveRatio'] ?? '').toString();
-        ;
-        _zeEncoderPPR.text = (data['ZeEncodePPR'] ?? '').toString();
-        ;
-        _zeDegreeToScale.text = (data['ZeDegreetoScale'] ?? '').toString();
-        ;
-        _zeStallSpeed.text = (data['ZeStallSpeed'] ?? '').toString();
-        ;
-        _zeReverseMotor.text = (data['ZeReverseMotor'] ?? '').toString();
-        ;
-        _zeDeadBand.text = (data['ZeDeadBand'] ?? '').toString();
-        ;
-        _selectedTrackerControl = 'Off';
-      });
-    } else {
-      // Handle the error
-      throw Exception('Failed to load azimuth motor settings');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _zeMotorRatio.text = (data['ZeMotorRatio'] ?? '').toString();
+          _zeAccellTime.text = (data['ZeAccellTime'] ?? '').toString();
+          _zeDriveRatio.text = (data['ZeDriveRatio'] ?? '').toString();
+          _zeEncoderPPR.text = (data['ZeEncodePPR'] ?? '').toString();
+          _zeDegreeToScale.text = (data['ZeDegreetoScale'] ?? '').toString();
+          _zeStallSpeed.text = (data['ZeStallSpeed'] ?? '').toString();
+          _zeReverseMotor.text = (data['ZeReverseMotor'] ?? '').toString();
+          _zeDeadBand.text = (data['ZeDeadBand'] ?? '').toString();
+          _selectedTrackerControl = 'Off';
+        });
+      } else {
+        _logger
+            .e('Failed to load zenith motor settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to load zenith motor settings');
+        throw Exception('Failed to load zenith motor settings');
+      }
+    } catch (e) {
+      _logger.e('Error fetching zenith motor settings: $e');
+      CustomToast.showToast('Error fetching zenith motor settings');
     }
+  }
+
+  @override
+  void dispose() {
+    _zeMotorRatio.dispose();
+    _zeAccellTime.dispose();
+    _zeDriveRatio.dispose();
+    _zeEncoderPPR.dispose();
+    _zeDegreeToScale.dispose();
+    _zeStallSpeed.dispose();
+    _zeReverseMotor.dispose();
+    _zeDeadBand.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: kPrimary,
       appBar: AppBar(
-        title: const Text('Azimuth Motor settings',
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.grey[900],
+        centerTitle: true,
+        title: const Text('Zenith Motor Settings'),
+        backgroundColor: kSecondary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -77,14 +93,45 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildTextField('Motor Ratio', _zeMotorRatio),
-              buildTextField('Accell Time', _zeAccellTime),
-              buildTextField('Drive Ratio', _zeDriveRatio),
-              buildTextField('PPR', _zeEncoderPPR),
-              buildTextField('Degree to Scale', _zeDegreeToScale),
-              buildTextField('Stall Speed', _zeStallSpeed),
-              buildTextField('Reverse Motor', _zeReverseMotor),
-              buildTextField('Dead Band', _zeDeadBand),
+              CustomTextField(
+                controller: _zeMotorRatio,
+                labelText: 'Motor Ratio',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeAccellTime,
+                labelText: 'Accell Time',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeDriveRatio,
+                labelText: 'Drive Ratio',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeEncoderPPR,
+                labelText: 'PPR',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeDegreeToScale,
+                labelText: 'Degree to Scale',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeStallSpeed,
+                labelText: 'Stall Speed',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeReverseMotor,
+                labelText: 'Reverse Motor',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zeDeadBand,
+                labelText: 'Dead Band',
+              ),
               const SizedBox(height: 20),
               const Center(
                   child: Text('Tracker Control',
@@ -93,7 +140,8 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
               Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 3.0),
+                    horizontal: 12.0,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(8.0),
@@ -122,22 +170,19 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 10),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Implement save functionality here
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 18),
-                  ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomElevatedButton(
+                      text: 'Save Changes',
+                      onPressed: () {
+                        // Implement save functionality here
+                        CustomToast.showToast('Changes saved successfully');
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

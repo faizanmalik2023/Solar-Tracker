@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:solar_tracker/helping_widgets/textfield_widget.dart';
+import 'package:logger/logger.dart';
+import 'package:solar_tracker/helping_widgets/custom_text_field.dart';
+import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
+import 'package:solar_tracker/constants.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
 
 class ZenithSettings extends StatefulWidget {
   const ZenithSettings({super.key});
@@ -16,26 +19,29 @@ class _ZenithSettingsState extends State<ZenithSettings> {
   final TextEditingController _zenithOffset = TextEditingController();
   final TextEditingController _zenithPark = TextEditingController();
   final TextEditingController _zenithPosLimit = TextEditingController();
+  final Logger _logger = Logger();
 
   Future<void> _fetchZenithSettings() async {
-    final response =
-        await http.get(Uri.parse('http://174.89.157.173:5000/zenithsettings'));
+    try {
+      final response = await http
+          .get(Uri.parse('http://174.89.157.173:5000/zenithsettings'));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        _zenithNegLimit.text = (data['ZeNegLimit'] ?? '').toString();
-        ;
-        _zenithOffset.text = (data['ZeOffset'] ?? '').toString();
-        ;
-        _zenithPark.text = (data['ZePark'] ?? '').toString();
-        ;
-        _zenithPosLimit.text = (data['ZePosLimit'] ?? '').toString();
-        ;
-      });
-    } else {
-      // Handle the error
-      throw Exception('Failed to load azimuth settings');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _zenithNegLimit.text = (data['ZeNegLimit'] ?? '').toString();
+          _zenithOffset.text = (data['ZeOffset'] ?? '').toString();
+          _zenithPark.text = (data['ZePark'] ?? '').toString();
+          _zenithPosLimit.text = (data['ZePosLimit'] ?? '').toString();
+        });
+      } else {
+        _logger.e('Failed to load zenith settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to load zenith settings');
+        throw Exception('Failed to load zenith settings');
+      }
+    } catch (e) {
+      _logger.e('Error fetching zenith settings: $e');
+      CustomToast.showToast('Error fetching zenith settings');
     }
   }
 
@@ -46,13 +52,22 @@ class _ZenithSettingsState extends State<ZenithSettings> {
   }
 
   @override
+  void dispose() {
+    _zenithNegLimit.dispose();
+    _zenithOffset.dispose();
+    _zenithPark.dispose();
+    _zenithPosLimit.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: kPrimary,
       appBar: AppBar(
-        title: const Text('Zenith settings',
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.grey[900],
+        centerTitle: true,
+        title: const Text('Zenith Settings'),
+        backgroundColor: kSecondary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -61,26 +76,38 @@ class _ZenithSettingsState extends State<ZenithSettings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildTextField('Negative Limit', _zenithNegLimit),
-              buildTextField('Offset', _zenithOffset),
-              buildTextField('Park', _zenithPark),
-              buildTextField('Soft Limit', _zenithPosLimit),
+              CustomTextField(
+                controller: _zenithNegLimit,
+                labelText: 'Negative Limit',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zenithOffset,
+                labelText: 'Offset',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zenithPark,
+                labelText: 'Park',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _zenithPosLimit,
+                labelText: 'Soft Limit',
+              ),
               const SizedBox(height: 40),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Implement save functionality here
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 18),
-                  ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomElevatedButton(
+                      text: 'Save Changes',
+                      onPressed: () {
+                        // Implement save functionality here
+                        CustomToast.showToast('Changes saved successfully');
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

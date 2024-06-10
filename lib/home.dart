@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:solar_tracker/utilities/bluetooth_page.dart';
+import 'package:solar_tracker/helping_widgets/custom_dropdown_button.dart';
+import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
+import 'package:solar_tracker/helping_widgets/custom_toast.dart';
+import 'package:solar_tracker/utilities/connect_bluetooth_page.dart';
 import 'package:solar_tracker/utilities/tracker_settings.dart';
+import 'package:solar_tracker/constants.dart';
+import 'package:logger/logger.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,14 +25,15 @@ class _HomePageState extends State<HomePage> {
   String trackerAzimuth = '';
   String trackerZenith = '';
   String wind = '';
-  String _selectedTrackerControl = 'Option 1'; // Default selected value
+  String _selectedTrackerControl = 'Option 1';
   final List<String> _trackerControlOptions = [
     'Option 1',
     'Option 2',
     'Option 3'
   ];
   Timer? _timer;
-  int _timerValue = 0; // Global variable to store the timer value
+  int _timerValue = 0;
+  final Logger _logger = Logger();
 
   @override
   void initState() {
@@ -37,37 +43,47 @@ class _HomePageState extends State<HomePage> {
 
   void _startTimer() {
     _timerValue = 0;
-    _timer?.cancel(); // Cancel any existing timer
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _timerValue++;
       });
-      print(_timerValue);
+      _logger.i('Timer value: $_timerValue');
     });
   }
 
   void _stopTimer() {
     _timer?.cancel();
-    print(_timerValue);
+    _logger.i('Timer stopped at: $_timerValue seconds');
   }
 
   Future<void> _fetchTrackerPosition() async {
-    final response =
-        await http.get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        sunAzimuth = data['SunAzimuth'].toString();
-        sunZenith = data['SunZenith'].toString();
-        temperature = data['Temperature'].toString();
-        trackerAzimuth = data['TrackerAzimuth'].toString();
-        trackerZenith = data['TrackerZenith'].toString();
-        wind = data['Wind'].toString();
-      });
-    } else {
-      // Handle the error
-      throw Exception('Failed to load tracker position');
+    try {
+      final response = await http
+          .get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          sunAzimuth = data['SunAzimuth'].toString();
+          sunZenith = data['SunZenith'].toString();
+          temperature = data['Temperature'].toString();
+          trackerAzimuth = data['TrackerAzimuth'].toString();
+          trackerZenith = data['TrackerZenith'].toString();
+          wind = data['Wind'].toString();
+        });
+      } else {
+        _logger.e(
+            'Failed to load tracker position, Status code: ${response.statusCode}');
+        CustomToast.showToast(
+          'Failed to load tracker position',
+        );
+        throw Exception('Failed to load tracker position');
+      }
+    } catch (e) {
+      _logger.e('Error fetching tracker position: $e');
+      CustomToast.showToast(
+        'Error fetching tracker position',
+      );
     }
   }
 
@@ -80,10 +96,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
+        automaticallyImplyLeading: false,
+        backgroundColor: kSecondary,
         foregroundColor: Colors.white,
-        title: const Text('Tracker Page'),
+        surfaceTintColor: kSecondary,
+        title: const Text(
+          'Tracker Page',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -91,8 +117,8 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute<ConnectBluetoothTrackerPage>(
-                    builder: (context) => const ConnectBluetoothTrackerPage(),
+                  MaterialPageRoute<ConnectBluetoothPage>(
+                    builder: (context) => const ConnectBluetoothPage(),
                   ),
                 );
               },
@@ -115,19 +141,35 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          color: Colors.black,
-          padding: const EdgeInsets.all(16.0),
+          color: kPrimary,
+          padding: const EdgeInsets.all(
+            16.0,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
-              Text('Temperature (C): $temperature °C',
-                  style: const TextStyle(color: Colors.white, fontSize: 18)),
+              const SizedBox(
+                height: 40,
+              ),
+              Text(
+                'Temperature (C): $temperature °C',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
               const SizedBox(height: 10),
-              Text('Wind: $wind Km/h',
-                  style: const TextStyle(color: Colors.white, fontSize: 18)),
-              const SizedBox(height: 20),
+              Text(
+                'Wind: $wind Km/h',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -136,87 +178,82 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey),
+                        color: Colors.white),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 2.0),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        dropdownColor: Colors.grey[900],
-                        value: _selectedTrackerControl,
-                        icon: const Icon(Icons.arrow_drop_down,
-                            color: Colors.grey),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedTrackerControl = newValue!;
-                          });
-                        },
-                        items: _trackerControlOptions
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                  CustomDropdownButton(
+                    selectedValue: _selectedTrackerControl,
+                    options: _trackerControlOptions,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedTrackerControl = newValue!;
+                      });
+                    },
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              Text('Tracker Azimuth: $trackerAzimuth',
-                  style: const TextStyle(color: Colors.white)),
-              Text('Tracker Zenith: $trackerZenith',
-                  style: const TextStyle(color: Colors.white)),
+              Text(
+                'Tracker Azimuth: $trackerAzimuth',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Tracker Zenith: $trackerZenith',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
               const SizedBox(height: 10),
-              _buildGraphSection('Sun Zenith', sunZenith, 'Zenith', 'Time'),
-              _buildGraphSection('Sun Azimuth', sunAzimuth, 'Azimuth', 'Time'),
-              Text('Sun Azimuth: $sunAzimuth',
-                  style: const TextStyle(color: Colors.white, fontSize: 16)),
-              Text('Sun Zenith: $sunZenith',
-                  style: const TextStyle(color: Colors.white, fontSize: 16)),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: _buildGraphSection(
+                  'Sun Zenith',
+                  sunZenith,
+                  'Zenith',
+                  'Time',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: _buildGraphSection(
+                  'Sun Azimuth',
+                  sunAzimuth,
+                  'Azimuth',
+                  'Time',
+                ),
+              ),
+              Text(
+                'Sun Azimuth: $sunAzimuth',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                'Sun Zenith: $sunZenith',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: _startTimer,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(100, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    CustomElevatedButton(
+                      text: 'Start',
+                      onPressed: _startTimer,
                     ),
-                    child: const Text('Start'),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: _stopTimer,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(100, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
+                    CustomElevatedButton(
+                      text: 'Stop',
+                      onPressed: _stopTimer,
                     ),
-                    child: const Text('Stop'),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -230,41 +267,62 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 8.0),
           child: Text(
             title,
             style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
         Container(
-          height: 200,
-          padding: const EdgeInsets.all(16.0),
+          height: MediaQuery.of(context).size.height * 0.225,
           child: LineChart(
             LineChartData(
               gridData: const FlGridData(show: true),
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
-                  sideTitles: const SideTitles(showTitles: true),
-                  axisNameWidget: Text(yAxisLabel,
-                      style: const TextStyle(color: Colors.white)),
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(color: Colors.white),
+                      );
+                    },
+                  ),
+                  axisNameWidget: Text(
+                    yAxisLabel,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
                 bottomTitles: AxisTitles(
-                  sideTitles: const SideTitles(showTitles: true),
-                  axisNameWidget: Text(xAxisLabel,
-                      style: const TextStyle(color: Colors.white)),
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(color: Colors.white),
+                      );
+                    },
+                  ),
+                  axisNameWidget: Text(
+                    xAxisLabel,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-              borderData: FlBorderData(show: true),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
               lineBarsData: [
                 LineChartBarData(
                   spots: _generateDataPoints(zenithValue),
                   isCurved: true,
-                  gradient: const LinearGradient(
-                    colors: [Colors.blue, Colors.purple],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
+                  color: Color(0xFFe6d800),
                   barWidth: 4,
                   isStrokeCapRound: true,
                   dotData: const FlDotData(show: false),
@@ -272,11 +330,7 @@ class _HomePageState extends State<HomePage> {
                 LineChartBarData(
                   spots: _generateDataPoints(trackerZenith),
                   isCurved: true,
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.yellow],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
+                  color: Color(0xFFe60049),
                   barWidth: 4,
                   isStrokeCapRound: true,
                   dotData: const FlDotData(show: false),
