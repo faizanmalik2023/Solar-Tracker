@@ -1,102 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'dart:async';
-import 'dart:io' show Platform;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:solar_tracker/providers/bluetooth_provider.dart';
 
-class ConnectBluetoothTrackerPage extends StatefulWidget {
+class ConnectBluetoothTrackerPage extends ConsumerWidget {
   const ConnectBluetoothTrackerPage({super.key});
 
   @override
-  _ConnectBluetoothTrackerPageState createState() =>
-      _ConnectBluetoothTrackerPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bluetoothState = ref.watch(bluetoothProvider);
+    final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
 
-class _ConnectBluetoothTrackerPageState
-    extends State<ConnectBluetoothTrackerPage> {
-  //FlutterBluePlus flutterBlue = FlutterBluePlus.adapterName;
-  bool _bluetoothEnabled = false;
-  List<BluetoothDevice> connectedDevices = [];
-  List<ScanResult> scanResults = [];
-  StreamSubscription<BluetoothAdapterState>? _adapterStateSubscription;
-  StreamSubscription<List<ScanResult>>? _scanResultsSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _initBluetooth();
-  }
-
-  @override
-  void dispose() {
-    _adapterStateSubscription?.cancel();
-    _scanResultsSubscription?.cancel();
-    super.dispose();
-  }
-
-  void _initBluetooth() async {
-    // Check if Bluetooth is supported
-    if (await FlutterBluePlus.isSupported == false) {
-      print('Bluetooth not supported by this device');
-      return;
-    }
-
-    // Handle Bluetooth on & off
-    _adapterStateSubscription =
-        FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
-      setState(() {
-        _bluetoothEnabled = (state == BluetoothAdapterState.on);
-      });
-      if (state == BluetoothAdapterState.on) {
-        _startScan();
-      } else {
-        _stopScan();
-      }
-    });
-
-    // Get connected devices
-    // FlutterBluePlus.connectedDevices.asStream().listen((devices) {
-    //   setState(() {
-    //     connectedDevices = devices;
-    //   });
-    // });
-    setState(() {
-      connectedDevices = FlutterBluePlus.connectedDevices;
-    });
-
-    // Listen to scan results
-    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
-      setState(() {
-        scanResults = results;
-      });
-    });
-  }
-
-  void _toggleBluetooth(bool value) async {
-    if (Platform.isAndroid) {
-      if (value) {
-        await FlutterBluePlus.turnOn();
-      } else {
-        // await FlutterBluePlus.;
-      }
-    }
-    setState(() {
-      _bluetoothEnabled = value;
-    });
-  }
-
-  void _startScan() {
-    FlutterBluePlus.startScan(timeout: const Duration(seconds: 4));
-  }
-
-  void _stopScan() {
-    FlutterBluePlus.stopScan();
-    setState(() {
-      scanResults.clear();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Connect Bluetooth Tracker'),
@@ -119,100 +32,127 @@ class _ConnectBluetoothTrackerPageState
                   ),
                 ),
                 Switch(
-                  value: _bluetoothEnabled,
-                  onChanged: _toggleBluetooth,
+                  value: bluetoothState.bluetoothEnabled,
+                  onChanged: (value) {
+                    bluetoothNotifier.toggleBluetooth(context, value);
+                  },
                   activeColor: Colors.deepPurple,
                 ),
               ],
             ),
             const Divider(color: Colors.white),
-            Text(
-              '[${connectedDevices.length} List Items]',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const Text(
-              'Connected Devices',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              'Finding...',
-              style: TextStyle(color: Colors.grey),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: connectedDevices.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.teal,
-                    child: ListTile(
-                      title: Text(
-                        connectedDevices[index].platformName,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      subtitle: Text(
-                        connectedDevices[index].remoteId.toString(),
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      trailing: const Icon(
-                        Icons.signal_cellular_alt,
-                        color: Colors.white,
-                      ),
-                      onTap: () {
-                        // Handle device tap
-                      },
+            if (bluetoothState.isLoading)
+              Center(child: CircularProgressIndicator())
+            else
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '[${bluetoothState.connectedDevices.length} List Items]',
+                      style: const TextStyle(color: Colors.grey),
                     ),
-                  );
-                },
-              ),
-            ),
-            Text(
-              '[${scanResults.length} List Items]',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const Text(
-              'Devices',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              'Scanning...',
-              style: TextStyle(color: Colors.grey),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: scanResults.length,
-                itemBuilder: (context, index) {
-                  final device = scanResults[index].device;
-                  return Card(
-                    color: Colors.teal,
-                    child: ListTile(
-                      title: Text(
-                        device.platformName,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      subtitle: Text(
-                        device.remoteId.toString(),
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      trailing: const Icon(
-                        Icons.signal_cellular_alt,
+                    const Text(
+                      'Connected Devices',
+                      style: TextStyle(
                         color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onTap: () {
-                        // Handle device tap
-                      },
                     ),
-                  );
-                },
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: bluetoothState.connectedDevices.length,
+                        itemBuilder: (context, index) {
+                          final device = bluetoothState.connectedDevices[index];
+                          return Card(
+                            color: Colors.teal,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8.0),
+                                onTap: () {
+                                  bluetoothNotifier
+                                      .disconnectFromDevice(device);
+                                },
+                                child: ListTile(
+                                  title: Text(
+                                    device.platformName,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  subtitle: Text(
+                                    device.remoteId.toString(),
+                                    style:
+                                        const TextStyle(color: Colors.white70),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.signal_cellular_alt,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Text(
+                      '[${bluetoothState.scanResults.length} List Items]',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const Text(
+                      'Available Devices',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: bluetoothState.scanResults.length,
+                        itemBuilder: (context, index) {
+                          final device =
+                              bluetoothState.scanResults[index].device;
+                          return Card(
+                            color: Colors.teal,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8.0),
+                                onTap: () {
+                                  bluetoothNotifier.connectToDevice(device);
+                                },
+                                child: ListTile(
+                                  title: Text(
+                                    device.platformName,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  subtitle: Text(
+                                    device.remoteId.toString(),
+                                    style:
+                                        const TextStyle(color: Colors.white70),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.signal_cellular_alt,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),

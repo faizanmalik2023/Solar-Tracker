@@ -87,27 +87,28 @@ class _HomePageState extends State<HomePage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () {
+            child: IconButton(
+              onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute<ConnectBluetoothTrackerPage>(
-                        builder: (context) =>
-                            const ConnectBluetoothTrackerPage()));
+                  context,
+                  MaterialPageRoute<ConnectBluetoothTrackerPage>(
+                    builder: (context) => const ConnectBluetoothTrackerPage(),
+                  ),
+                );
               },
-              child: const Icon(Icons.bluetooth, size: 30),
+              icon: const Icon(Icons.bluetooth, size: 30),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () {
+            child: IconButton(
+              onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute<TrackerSettingsPage>(
                         builder: (context) => const TrackerSettingsPage()));
               },
-              child: const Icon(Icons.settings, size: 30),
+              icon: const Icon(Icons.settings, size: 30),
             ),
           ),
         ],
