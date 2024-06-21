@@ -39,7 +39,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   Future<void> _fetchAzimuthMotorSettings() async {
     try {
       final response =
-      await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
+      await http.get(Uri.parse('http://184.147.14.104:5000/azimuthmotor'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -71,7 +71,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   Future<void> _saveAzimuthMotorSettings() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/setazimuthmotor'),
+        Uri.parse('http://184.147.14.104:5000/setazimuthmotor'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
