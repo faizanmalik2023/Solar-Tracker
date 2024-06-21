@@ -46,6 +46,34 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
     }
   }
 
+  Future<void> _saveAzimuthSettings() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/setazimuthsettings'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'AzOffset': _azimuthOffset.text,
+          'AzPark': _azimuthPark.text,
+          'AzPosLimit': _azimuthPosLimit.text,
+          'AzNegLimit': _azimuthNegLimit.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save azimuth settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to save azimuth settings');
+        throw Exception('Failed to save azimuth settings');
+      }
+    } catch (e) {
+      _logger.e('Error saving azimuth settings: $e');
+      CustomToast.showToast('Error saving azimuth settings');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -103,10 +131,7 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
                   children: [
                     CustomElevatedButton(
                       text: 'Save Changes',
-                      onPressed: () {
-                        // Implement save functionality here
-                        CustomToast.showToast('Changes saved successfully');
-                      },
+                      onPressed: _saveAzimuthSettings,
                     ),
                   ],
                 ),

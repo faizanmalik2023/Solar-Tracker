@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:solar_tracker/helping_widgets/custom_text_field.dart';
-
 import 'package:solar_tracker/helping_widgets/custom_elevated_button.dart';
 import 'package:solar_tracker/constants.dart';
 import 'package:solar_tracker/helping_widgets/custom_toast.dart';
@@ -45,6 +44,36 @@ class _TrackerControlState extends State<TrackerControl> {
     } catch (e) {
       _logger.e('Error fetching tracker controls: $e');
       CustomToast.showToast('Error fetching tracker controls');
+    }
+  }
+
+  Future<void> _saveTrackerControls() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/settrackercontrol'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'TrackerState': _trackerState.text,
+          'TrackerWind': _trackerWind.text,
+          'TrackerNight': _trackerNight.text,
+          'Trackdelay': _trackerDelay.text,
+          'Elevation': _trackerElevation.text,
+        }),
+      );
+      print(response);
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save tracker controls: ${response.statusCode}');
+        CustomToast.showToast('Failed to save tracker controls');
+        throw Exception('Failed to save tracker controls');
+      }
+    } catch (e) {
+      _logger.e('Error saving tracker controls: $e');
+      CustomToast.showToast('Error saving tracker controls');
     }
   }
 
@@ -110,10 +139,7 @@ class _TrackerControlState extends State<TrackerControl> {
                 children: [
                   CustomElevatedButton(
                     text: 'Save Changes',
-                    onPressed: () {
-                      // Implement save functionality here
-                      CustomToast.showToast('Changes saved successfully');
-                    },
+                    onPressed: _saveTrackerControls,
                   ),
                 ],
               ),

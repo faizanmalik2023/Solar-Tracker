@@ -32,35 +32,31 @@ class _HomePageState extends State<HomePage> {
     'Option 3'
   ];
   Timer? _timer;
-  int _timerValue = 0;
   final Logger _logger = Logger();
 
   @override
   void initState() {
     super.initState();
-    _fetchTrackerPosition();
+    _fetchTrackerPosition(); 
+    _startAutoRefresh();
   }
 
-  void _startTimer() {
-    _timerValue = 0;
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _timerValue++;
-      });
-      _logger.i('Timer value: $_timerValue');
+  void _startAutoRefresh() {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      print("yes");
+      _fetchTrackerPosition();
     });
   }
 
-  void _stopTimer() {
+  @override
+  void dispose() {
     _timer?.cancel();
-    _logger.i('Timer stopped at: $_timerValue seconds');
+    super.dispose();
   }
 
   Future<void> _fetchTrackerPosition() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
+      final response = await http.get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -72,25 +68,19 @@ class _HomePageState extends State<HomePage> {
           wind = data['Wind'].toString();
         });
       } else {
-        _logger.e(
-            'Failed to load tracker position, Status code: ${response.statusCode}');
-        CustomToast.showToast(
-          'Failed to load tracker position',
-        );
+        _logger.e('Failed to load tracker position, Status code: ${response.statusCode}');
+        CustomToast.showToast('Failed to load tracker position');
         throw Exception('Failed to load tracker position');
       }
     } catch (e) {
       _logger.e('Error fetching tracker position: $e');
-      CustomToast.showToast(
-        'Error fetching tracker position',
-      );
+      CustomToast.showToast('Error fetching tracker position');
     }
   }
 
   List<FlSpot> _generateDataPoints(String value) {
     double parsedValue = double.tryParse(value) ?? 0.0;
-    return List.generate(10,
-        (index) => FlSpot(index.toDouble(), parsedValue + index.toDouble()));
+    return List.generate(10, (index) => FlSpot(index.toDouble(), parsedValue + index.toDouble()));
   }
 
   @override
@@ -142,43 +132,28 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Container(
           color: kPrimary,
-          padding: const EdgeInsets.all(
-            16.0,
-          ),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 40,
-              ),
+              const SizedBox(height: 40),
               Text(
                 'Temperature (C): $temperature °C',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
               const SizedBox(height: 10),
               Text(
                 'Wind: $wind Km/h',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
                     'Tracker Control',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   CustomDropdownButton(
                     selectedValue: _selectedTrackerControl,
@@ -194,64 +169,42 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 10),
               Text(
                 'Tracker Azimuth: $trackerAzimuth',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
+                style: const TextStyle(color: Colors.white),
               ),
               Text(
                 'Tracker Zenith: $trackerZenith',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
+                style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: _buildGraphSection(
-                  'Sun Zenith',
-                  sunZenith,
-                  'Zenith',
-                  'Time',
-                ),
+                child: _buildGraphSection('Sun Zenith', sunZenith, 'Zenith', 'Time'),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: _buildGraphSection(
-                  'Sun Azimuth',
-                  sunAzimuth,
-                  'Azimuth',
-                  'Time',
-                ),
+                child: _buildGraphSection('Sun Azimuth', sunAzimuth, 'Azimuth', 'Time'),
               ),
               Text(
                 'Sun Azimuth: $sunAzimuth',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
                 'Sun Zenith: $sunZenith',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CustomElevatedButton(
-                      text: 'Start',
-                      onPressed: _startTimer,
-                    ),
-                    CustomElevatedButton(
-                      text: 'Stop',
-                      onPressed: _stopTimer,
-                    ),
+                    // CustomElevatedButton(
+                    //   text: 'Start',
+                    //   onPressed: _startTimer,
+                    // ),
+                    // CustomElevatedButton(
+                    //   text: 'Stop',
+                    //   onPressed: _stopTimer,
+                    // ),
                   ],
                 ),
               ),
@@ -262,19 +215,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGraphSection(
-      String title, String zenithValue, String yAxisLabel, String xAxisLabel) {
+  Widget _buildGraphSection(String title, String zenithValue, String yAxisLabel, String xAxisLabel) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         Container(
@@ -322,7 +270,7 @@ class _HomePageState extends State<HomePage> {
                 LineChartBarData(
                   spots: _generateDataPoints(zenithValue),
                   isCurved: true,
-                  color: Color(0xFFe6d800),
+                  color: const Color(0xFFe6d800),
                   barWidth: 4,
                   isStrokeCapRound: true,
                   dotData: const FlDotData(show: false),
@@ -330,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                 LineChartBarData(
                   spots: _generateDataPoints(trackerZenith),
                   isCurved: true,
-                  color: Color(0xFFe60049),
+                  color: const Color(0xFFe60049),
                   barWidth: 4,
                   isStrokeCapRound: true,
                   dotData: const FlDotData(show: false),

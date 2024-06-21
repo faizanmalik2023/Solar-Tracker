@@ -53,6 +53,36 @@ class _TrackerLocationState extends State<TrackerLocation> {
     }
   }
 
+  Future<void> _saveTrackerLocation() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/settrackerlocation'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+
+          'Long': _trackerLong.text,
+          'Lat': _trackerLat.text,
+          'TimeZone': _timeZone.text,
+          'Trackdelay': _trackerDelay.text,
+          'Elevation': _trackerElevation.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save tracker location: ${response.statusCode}');
+        CustomToast.showToast('Failed to save tracker location');
+        throw Exception('Failed to save tracker location');
+      }
+    } catch (e) {
+      _logger.e('Error saving tracker location: $e');
+      CustomToast.showToast('Error saving tracker location');
+    }
+  }
+
   @override
   void dispose() {
     _trackerLat.dispose();
@@ -110,10 +140,7 @@ class _TrackerLocationState extends State<TrackerLocation> {
                   children: [
                     CustomElevatedButton(
                       text: 'Save Changes',
-                      onPressed: () {
-                        // Implement save functionality here
-                        CustomToast.showToast('Changes saved successfully');
-                      },
+                      onPressed: _saveTrackerLocation,
                     ),
                   ],
                 ),

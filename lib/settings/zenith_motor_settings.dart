@@ -37,7 +37,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
   Future<void> _fetchZenithMotorSettings() async {
     try {
       final response =
-          await http.get(Uri.parse('http://174.89.157.173:5000/zenithmotor'));
+      await http.get(Uri.parse('http://174.89.157.173:5000/zenithmotor'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -50,7 +50,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
           _zeStallSpeed.text = (data['ZeStallSpeed'] ?? '').toString();
           _zeReverseMotor.text = (data['ZeReverseMotor'] ?? '').toString();
           _zeDeadBand.text = (data['ZeDeadBand'] ?? '').toString();
-          _selectedTrackerControl = 'Off';
+          _selectedTrackerControl = (data['TrackerControl'] ?? 'Off').toString();
         });
       } else {
         _logger
@@ -61,6 +61,39 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
     } catch (e) {
       _logger.e('Error fetching zenith motor settings: $e');
       CustomToast.showToast('Error fetching zenith motor settings');
+    }
+  }
+
+  Future<void> _saveZenithMotorSettings() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/setzenithmotor'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'ZeMotorRatio': _zeMotorRatio.text,
+          'ZeAccellTime': _zeAccellTime.text,
+          'ZeDriveRatio': _zeDriveRatio.text,
+          'ZeEncodePPR': _zeEncoderPPR.text,
+          'ZeDegreetoScale': _zeDegreeToScale.text,
+          'ZeStallSpeed': _zeStallSpeed.text,
+          'ZeReverseMotor': _zeReverseMotor.text,
+          'ZeDeadBand': _zeDeadBand.text,
+          'TrackerControl': _selectedTrackerControl,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save zenith motor settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to save zenith motor settings');
+        throw Exception('Failed to save zenith motor settings');
+      }
+    } catch (e) {
+      _logger.e('Error saving zenith motor settings: $e');
+      CustomToast.showToast('Error saving zenith motor settings');
     }
   }
 
@@ -152,7 +185,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
                       dropdownColor: Colors.grey[800],
                       value: _selectedTrackerControl,
                       icon:
-                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      const Icon(Icons.arrow_drop_down, color: Colors.grey),
                       style: const TextStyle(color: Colors.white),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -177,10 +210,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
                   children: [
                     CustomElevatedButton(
                       text: 'Save Changes',
-                      onPressed: () {
-                        // Implement save functionality here
-                        CustomToast.showToast('Changes saved successfully');
-                      },
+                      onPressed: _saveZenithMotorSettings,
                     ),
                   ],
                 ),

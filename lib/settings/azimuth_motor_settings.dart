@@ -23,7 +23,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   final TextEditingController _driveRatioController = TextEditingController();
   final TextEditingController _encoderPPRController = TextEditingController();
   final TextEditingController _degreeToScaleController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _deadBandController = TextEditingController();
   final Logger _logger = Logger();
 
@@ -39,7 +39,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
   Future<void> _fetchAzimuthMotorSettings() async {
     try {
       final response =
-          await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
+      await http.get(Uri.parse('http://174.89.157.173:5000/azimuthmotor'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -54,7 +54,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
           _degreeToScaleController.text =
               (data['AzDegreetoScale'] ?? '').toString();
           _deadBandController.text = (data['AzDeadBand'] ?? '').toString();
-          _selectedTrackerControl = 'Off';
+          _selectedTrackerControl = (data['AzTrackerControl'] ?? 'Off').toString();
         });
       } else {
         _logger
@@ -65,6 +65,39 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
     } catch (e) {
       _logger.e('Error fetching azimuth motor settings: $e');
       CustomToast.showToast('Error fetching azimuth motor settings');
+    }
+  }
+
+  Future<void> _saveAzimuthMotorSettings() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/setazimuthmotor'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'AzMotorRatio': _motorRatioController.text,
+          'AzDriveRatio': _driveRatioController.text,
+          'AzEncodePPR': _encoderPPRController.text,
+          'AzDegreetoScale': _degreeToScaleController.text,
+          'AzDeadBand': _deadBandController.text,
+          'AzStallSpeed': _stallSpeedController.text,
+          'AzAccellTime': _accellTimeController.text,
+          'AzReverseMotor': _reverseMotorController.text,
+
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save azimuth motor settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to save azimuth motor settings');
+        throw Exception('Failed to save azimuth motor settings');
+      }
+    } catch (e) {
+      _logger.e('Error saving azimuth motor settings: $e');
+      CustomToast.showToast('Error saving azimuth motor settings');
     }
   }
 
@@ -155,7 +188,7 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                       dropdownColor: Colors.grey[800],
                       value: _selectedTrackerControl,
                       icon:
-                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      const Icon(Icons.arrow_drop_down, color: Colors.grey),
                       style: const TextStyle(color: Colors.white),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -173,18 +206,13 @@ class _AzimuthMotorSettingsPageState extends State<AzimuthMotorSettingsPage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomElevatedButton(
                     text: 'Save Changes',
-                    onPressed: () {
-                      // Implement save functionality here
-                      CustomToast.showToast('Changes saved successfully');
-                    },
+                    onPressed: _saveAzimuthMotorSettings,
                   ),
                 ],
               ),

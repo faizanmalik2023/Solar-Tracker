@@ -45,6 +45,35 @@ class _ZenithSettingsState extends State<ZenithSettings> {
     }
   }
 
+  Future<void> _saveZenithSettings() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://174.89.157.173:5000/setzenithsettings'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+
+          'ZeOffset': _zenithOffset.text,
+          'ZePark': _zenithPark.text,
+          'ZePosLimit': _zenithPosLimit.text,
+          'ZeNegLimit': _zenithNegLimit.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        CustomToast.showToast('Changes saved successfully');
+      } else {
+        _logger.e('Failed to save zenith settings: ${response.statusCode}');
+        CustomToast.showToast('Failed to save zenith settings');
+        throw Exception('Failed to save zenith settings');
+      }
+    } catch (e) {
+      _logger.e('Error saving zenith settings: $e');
+      CustomToast.showToast('Error saving zenith settings');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,10 +131,7 @@ class _ZenithSettingsState extends State<ZenithSettings> {
                   children: [
                     CustomElevatedButton(
                       text: 'Save Changes',
-                      onPressed: () {
-                        // Implement save functionality here
-                        CustomToast.showToast('Changes saved successfully');
-                      },
+                      onPressed: _saveZenithSettings,
                     ),
                   ],
                 ),
