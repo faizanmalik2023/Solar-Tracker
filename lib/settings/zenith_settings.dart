@@ -24,7 +24,7 @@ class _ZenithSettingsState extends State<ZenithSettings> {
   Future<void> _fetchZenithSettings() async {
     try {
       final response = await http
-          .get(Uri.parse('http://174.89.157.173:5000/zenithsettings'));
+          .get(Uri.parse('http://184.147.14.104:5000/zenithsettings'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -48,7 +48,7 @@ class _ZenithSettingsState extends State<ZenithSettings> {
   Future<void> _saveZenithSettings() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/setzenithsettings'),
+        Uri.parse('http://184.147.14.104:5000/setzenithsettings'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

@@ -31,7 +31,7 @@ class _TrackerLocationState extends State<TrackerLocation> {
   Future<void> _fetchTrackerLocation() async {
     try {
       final response = await http
-          .get(Uri.parse('http://174.89.157.173:5000/trackerlocation'));
+          .get(Uri.parse('http://184.147.14.104:5000/trackerlocation'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -56,7 +56,7 @@ class _TrackerLocationState extends State<TrackerLocation> {
   Future<void> _saveTrackerLocation() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/settrackerlocation'),
+        Uri.parse('http://184.147.14.104:5000/settrackerlocation'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

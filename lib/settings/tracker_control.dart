@@ -25,7 +25,7 @@ class _TrackerControlState extends State<TrackerControl> {
   Future<void> _fetchTrackerControls() async {
     try {
       final response = await http
-          .get(Uri.parse('http://174.89.157.173:5000/trackercontrol'));
+          .get(Uri.parse('http://184.147.14.104:5000/trackercontrol'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -50,7 +50,7 @@ class _TrackerControlState extends State<TrackerControl> {
   Future<void> _saveTrackerControls() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/settrackercontrol'),
+        Uri.parse('http://184.147.14.104:5000/settrackercontrol'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

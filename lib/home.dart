@@ -43,7 +43,6 @@ class _HomePageState extends State<HomePage> {
 
   void _startAutoRefresh() {
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      print("yes");
       _fetchTrackerPosition();
     });
   }
@@ -56,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchTrackerPosition() async {
     try {
-      final response = await http.get(Uri.parse('http://174.89.157.173:5000/trackerposition'));
+      final response = await http.get(Uri.parse('http://184.147.14.104:5000/trackerposition'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
