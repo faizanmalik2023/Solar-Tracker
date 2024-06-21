@@ -25,7 +25,7 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
   Future<void> _fetchAzimuthSettings() async {
     try {
       final response = await http
-          .get(Uri.parse('http://174.89.157.173:5000/azimuthsettings'));
+          .get(Uri.parse('http://184.147.14.104:5000/azimuthsettings'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -49,7 +49,7 @@ class _AzimuthSettingsState extends State<AzimuthSettings> {
   Future<void> _saveAzimuthSettings() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/setazimuthsettings'),
+        Uri.parse('http://184.147.14.104:5000/setazimuthsettings'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

@@ -37,7 +37,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
   Future<void> _fetchZenithMotorSettings() async {
     try {
       final response =
-      await http.get(Uri.parse('http://174.89.157.173:5000/zenithmotor'));
+      await http.get(Uri.parse('http://184.147.14.104:5000/zenithmotor'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -67,7 +67,7 @@ class _ZenithMotorSettingsState extends State<ZenithMotorSettings> {
   Future<void> _saveZenithMotorSettings() async {
     try {
       final response = await http.post(
-        Uri.parse('http://174.89.157.173:5000/setzenithmotor'),
+        Uri.parse('http://184.147.14.104:5000/setzenithmotor'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
